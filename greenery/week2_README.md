@@ -125,15 +125,15 @@ I would schedule the tests to run each morning. Alerts should be sent to an inte
 
 #### Answer:
 
-The following products had inventory increases:
+The following products had inventory DECREASES:
 
 
 ```
 PRODUCT_ID	INVENTORY_SNAPSHOT_W1	INVENTORY_SNAPSHOT_W2	INVENTORY_CHANGE
-fb0e8be7-5ac4-4a76-a1fa-2cc4bf0b2d80	10	58	48
-55c6a062-5f4a-4a8b-a8e5-05ea5e6715a3	25	51	26
-4cda01b9-62e2-46c5-830f-b7f262a58fb1	20	40	20
-be49171b-9f72-4fc9-bf7a-9a52e259836b	64	77	13
+be49171b-9f72-4fc9-bf7a-9a52e259836b	77	64	-13
+4cda01b9-62e2-46c5-830f-b7f262a58fb1	40	20	-20
+55c6a062-5f4a-4a8b-a8e5-05ea5e6715a3	51	25	-26
+fb0e8be7-5ac4-4a76-a1fa-2cc4bf0b2d80	58	10	-48
 ```
 
 ##### QUERY
@@ -143,14 +143,14 @@ WITH snapshot_1 AS (
     DISTINCT product_id,
     inventory AS inv
     FROM DEV_DB.DBT_KWESTERNBETTERCOLLECTIVECOM.PRODUCTS_SNAPSHOT
-    WHERE dbt_valid_to IS NULL),
+    WHERE dbt_valid_to IS NOT NULL),
 
 snapshot_2 AS (
     SELECT 
     DISTINCT product_id,
     inventory AS inv
     FROM DEV_DB.DBT_KWESTERNBETTERCOLLECTIVECOM.PRODUCTS_SNAPSHOT
-    WHERE dbt_valid_to IS NOT NULL)
+    WHERE dbt_valid_to IS NULL)
 
 SELECT 
     s1.product_id,

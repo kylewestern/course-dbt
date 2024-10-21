@@ -37,7 +37,8 @@ events AS (
 event_agg_page_view AS (
     SELECT 
         DISTINCT product_id,
-        COUNT (DISTINCT event_id) AS page_view_events
+        COUNT (DISTINCT event_id) AS page_view_events,
+        COUNT (DISTINCT session_id) AS session_events
     FROM events
     WHERE 
         event_type = 'page_view'
@@ -73,6 +74,21 @@ orders AS (
         delivered_at,
         status
     FROM {{ source('postgres', 'orders') }}
+),
+
+event_agg_checkout AS (
+    SELECT 
+        DISTINCT oi.product_id,
+        COUNT (DISTINCT e.session_id) AS checkout_sessions
+    FROM events e
+    JOIN orders o
+        ON o.order_id = e.order_id
+    JOIN order_items oi
+        ON oi.order_id = o.order_id           
+    WHERE 
+        event_type = 'checkout'
+        AND e.order_id IS NOT NULL
+    GROUP BY 1
 )
 
 SELECT 
@@ -81,7 +97,9 @@ SELECT
     p.price,
     p.inventory,
     eapv.page_view_events AS total_page_view_events,
+    eapv.session_events AS total_session_events,
     eaatc.add_to_cart_events AS total_add_to_cart_events,
+    (eaco.checkout_sessions::FLOAT / eapv.session_events) AS session_view_to_order_event_conversion_rate,
     (eaatc.add_to_cart_events::FLOAT / eapv.page_view_events) AS pv_to_cart_conversion_rate,
     (COUNT (DISTINCT oi.order_id)::FLOAT / eaatc.add_to_cart_events) AS cart_to_order_conversion_rate,
     (COUNT (DISTINCT oi.order_id)::FLOAT / eapv.page_view_events) AS pv_to_order_conversion_rate,
@@ -98,5 +116,7 @@ LEFT JOIN orders o
 LEFT JOIN event_agg_page_view AS eapv
     ON eapv.product_id = p.product_id
 LEFT JOIN event_agg_add_to_cart AS eaatc
-    ON eaatc.product_id = p.product_id    
-GROUP BY 1, 2, 3, 4, 5, 6
+    ON eaatc.product_id = p.product_id
+LEFT JOIN event_agg_checkout AS eaco
+    ON eaco.product_id = p.product_id        
+GROUP BY 1, 2, 3, 4, 5, 6, 7, 8
