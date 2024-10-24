@@ -1,0 +1,18 @@
+
+macros: 
+  - name: sum_of
+    description: Aggregation function that sums a column with a specific value
+    arguments: 
+      - name: col_name
+        description: Target column
+      - name: col_value
+        description: Target value of column
+  - name: safe_divide
+    description: This macro performs division but returns null if the denominator is 0
+    arguments: 
+      - name: numerator
+        description: The number or SQL expression you want to divide.
+      - name: denominator
+        description: The number or SQL expression you want to divide by.
+  - name: star
+    description: Select helper    

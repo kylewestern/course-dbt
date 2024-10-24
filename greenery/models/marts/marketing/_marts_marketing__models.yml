@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: fact_promos
+    description: Information about promos. 
+    columns:
+      - name: promo_id
+        tests:
+          - not_null
+          - unique
+  - name: fact_users
+    description: Information about users' orders
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - unique

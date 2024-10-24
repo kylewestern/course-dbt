@@ -31,16 +31,17 @@ session_timing_agg AS (
     FROM {{ ref('int_session_timing') }}
 )
 
+{% set event_types = ['page_view', 'add_to_cart', 'checkout', 'package_shipped'] %}
+
 SELECT 
     e.session_id,
     e.user_id,
     COALESCE(e.product_id, oi.product_id) AS product_id,
     s.session_started_at,
     s.session_ended_at,
-    SUM(CASE WHEN e.event_type = 'page_view' THEN 1 ELSE 0 END) AS page_views,
-    SUM(CASE WHEN e.event_type = 'add_to_cart' THEN 1 ELSE 0 END) AS add_to_carts,
-    SUM(CASE WHEN e.event_type = 'checkout' THEN 1 ELSE 0 END) AS checkouts,
-    SUM(CASE WHEN e.event_type = 'package_shipped' THEN 1 ELSE 0 END) AS packages_shipped,
+    {% for event_type in event_types %}
+    {{ sum_of('e.event_type', event_type ) }} AS {{ event_type }}s,
+    {% endfor %}
     DATEDIFF('MINUTE', s.session_started_at, s.session_ended_at) AS session_length_minutes
 FROM events e
 LEFT JOIN order_items oi

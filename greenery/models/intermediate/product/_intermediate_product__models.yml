@@ -1,0 +1,7 @@
+version: 2
+
+models:
+  - name: int_session_timing
+    description: Int model for session timing
+    columns:
+      - name: session_id

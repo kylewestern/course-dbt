@@ -6,9 +6,7 @@
 
 WITH promos AS (
     SELECT 
-        promo_id,
-        discount,
-        status
+        {{ dbt_utils.star(ref('stg_promos')) }}
     FROM {{ ref('stg_promos') }}
 ),
 

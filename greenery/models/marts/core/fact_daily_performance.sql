@@ -6,8 +6,8 @@
 
 WITH dates AS (
     SELECT 
-        date
-FROM {{ ref('dates') }}
+        date_day AS date
+FROM {{ ref('date_fill') }}
 ),
         
 

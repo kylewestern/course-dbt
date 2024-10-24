@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: fact_daily_performance
+    description: Information about daily performance
+    columns:
+      - name: date
+        tests:
+          - not_null
+          - unique
+  - name: fact_lifetime_performance
+    description: Information about lifetime performance
+    columns:
+      - name: order_count

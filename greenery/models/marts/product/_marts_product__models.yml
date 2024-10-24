@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: fact_page_views
+    description: Information about page views. 
+    columns:
+      - name: session_id
+  - name: fact_products
+    description: Information about products 
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - unique
